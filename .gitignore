@@ -1,0 +1,8 @@
+*.exe
+*.dll
+*.pdb
+*.sha256
+components/
+runtimes/
+*.sl2
+*.dcx
