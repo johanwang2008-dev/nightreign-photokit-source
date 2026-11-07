@@ -159,9 +159,9 @@ class MainForm : Form
     {
         Text = "黑夜君临 · 摄影与 Boss 练习工具包 1.0.8"; Font = new Font("Microsoft YaHei UI", 10F);
         AutoScaleMode = AutoScaleMode.Dpi; ClientSize = new Size(980, 650); MinimumSize = new Size(996, 689); StartPosition = FormStartPosition.CenterScreen;
-        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(20), ColumnCount = 1, RowCount = 8 };
+        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(20), ColumnCount = 1, RowCount = 7 };
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 64)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 54)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 54)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 54)); layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 54)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 54)); layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
         Controls.Add(layout);
         layout.Controls.Add(new Label { Text = "黑夜君临摄影工具包\r\n拍摄 / 自由选 Boss：进入 Boss 练习场 → 圆桌厅堂 → 打开相机并注入", AutoSize = true, Dock = DockStyle.Fill }, 0, 0);
         var pathPanel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 2 };
@@ -170,15 +170,15 @@ class MainForm : Form
         game.Dock = DockStyle.Fill; game.Text = Kit.FindGame(); pathPanel.Controls.Add(game, 0, 1);
         var browse = new Button { Text = "选择游戏…", Dock = DockStyle.Fill }; browse.Click += delegate { using (var d = new OpenFileDialog { Filter = "游戏程序|nightreign.exe", Title = "选择 Game 文件夹内的 nightreign.exe" }) if (d.ShowDialog() == DialogResult.OK) { game.Text = d.FileName; Kit.Text(Path.Combine(Kit.Data, "game-path.txt"), game.Text); } }; pathPanel.Controls.Add(browse, 1, 1); layout.Controls.Add(pathPanel, 0, 1);
         runtime.Dock = DockStyle.Fill; runtime.TextAlign = ContentAlignment.MiddleLeft; RefreshRuntime(); layout.Controls.Add(runtime, 0, 2);
-        var first = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 1, Margin = Padding.Empty }; var second = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 1, Margin = Padding.Empty }; var third = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 1, Margin = Padding.Empty };
+        var first = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 1, Margin = Padding.Empty }; var third = new TableLayoutPanel { Dock = DockStyle.Fill, RowCount = 1, Margin = Padding.Empty };
         Add(first, "① 检查 / 安装环境", InstallRuntime, 165); Add(first, "② Boss 练习场（推荐拍摄）", () => Launch("Sandbox"), 218); Add(first, "奖励闯关（Boss Rush）", () => Launch("Progression"), 190); Add(first, "③ 打开中文相机", Camera, 165);
         var tips = new ToolTip(); tips.SetToolTip(first.Controls[1], "用于自由选 Boss、练习和拍摄；相机 Boss 选择功能请用这个模式。"); tips.SetToolTip(first.Controls[2], "连续挑战 Boss 获得奖励和解锁；一般拍摄不需要选这个。");
         Add(third, "校验完整性", () => Work(() => Kit.Verify(Kit.Root), "程序组件及离线安装器校验通过。说明文件不参与校验。"), 105);
         Add(third, "打开使用说明", Help, 145);
         Add(third, "打开日志", () => { Directory.CreateDirectory(Kit.Data); Process.Start(new ProcessStartInfo(Kit.Data) { UseShellExecute = true }); }, 115);
-        layout.Controls.Add(first, 0, 3); layout.Controls.Add(second, 0, 4); layout.Controls.Add(third, 0, 5);
-        log.Multiline = true; log.ReadOnly = true; log.ScrollBars = ScrollBars.Vertical; log.Dock = DockStyle.Fill; log.BackColor = Color.FromArgb(245, 247, 250); layout.Controls.Add(log, 0, 6);
-        layout.Controls.Add(new Label { Text = "默认离线 · 两种模式使用各自存档 · 游戏内文字需选简体中文", AutoSize = true, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft }, 0, 7);
+        layout.Controls.Add(first, 0, 3); layout.Controls.Add(third, 0, 4);
+        log.Multiline = true; log.ReadOnly = true; log.ScrollBars = ScrollBars.Vertical; log.Dock = DockStyle.Fill; log.BackColor = Color.FromArgb(245, 247, 250); layout.Controls.Add(log, 0, 5);
+        layout.Controls.Add(new Label { Text = "默认请求离线模式 · 两种模式使用各自存档", AutoSize = true, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft }, 0, 6);
         log.Text = "先完整解压再打开。components 是功能组件，说明文件不影响启动。\r\n首次运行点“检查 / 安装环境”；环境齐全时会直接提示。\r\n拍摄或自由选 Boss：点“Boss 练习场（推荐拍摄）”。\r\n“奖励闯关”是连续打 Boss 解锁奖励，普通拍摄不用选。\r\n游戏版本更新后，需重新确认 Mod 兼容性。\r\n当前版本的进游戏、实战及界面文字排版尚未完成测试。";
     }
     void Add(TableLayoutPanel p, string text, Action action, int width)
@@ -192,7 +192,7 @@ class MainForm : Form
     {
         string path = Kit.P(@"说明\使用说明.txt");
         if (File.Exists(path)) Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-        else MessageBox.Show(this, "先登录 Steam，检查安装环境，再启动 Boss 练习场。进入圆桌后打开中文相机并点击注入相机。\r\n\r\nBoss练习场简体汉化默认已应用，游戏语言需选简体中文。\r\n\r\n详细说明文件已移走或删除，不影响游戏或相机启动。", "内置使用说明", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        else MessageBox.Show(this, "先从原作者页面下载并准备 Boss 练习场、ME3 与 crittercam，再检查安装环境并启动练习场。进入圆桌后打开相机并点击注入相机。\r\n\r\n本源码版不含第三方组件或汉化资源，请分别查看原作者的许可与说明。", "内置使用说明", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
     void RefreshRuntime() { runtime.Text = "环境：VC++ x64 " + (Kit.VCInstalled() ? "✓ 已安装" : "未检测到") + "     WebView2 " + (Kit.WebViewInstalled() ? "✓ 已安装" : "未检测到"); }
     async void Work(Action action, string success)
@@ -243,3 +243,4 @@ class MainForm : Form
         Work(() => { Kit.Verify(Kit.Root, "camera"); Process.Start(new ProcessStartInfo(Kit.P(@"components\crittercam\crittercam.exe")) { UseShellExecute = true, WorkingDirectory = Kit.P(@"components\crittercam") }); }, "中文相机已打开。进入圆桌后点击“注入相机”，再按 Insert 开启自由镜头。");
     }
 }
+
